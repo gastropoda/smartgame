@@ -1,10 +1,12 @@
+(function(isNode, isAngular) {
+
 /**
  * Convert SGF files to a JS object
  * @param {string} sgf A valid SGF file.
  * @see http://www.red-bean.com/sgf/sgf4.html
  * @return {object} The SGF file represented as a JS object
  */
-exports.parse = function (sgf) {
+var parse = function (sgf) {
 	'use strict';
 
 	var parse;
@@ -158,7 +160,7 @@ exports.parse = function (sgf) {
  * @param {object} record A record object.
  * @return {string} The record as a string suitable for saving as an SGF file
  */
-exports.generate = function (record) {
+var generate = function (record) {
 	'use strict';
 
 	function stringifySequences(sequences) {
@@ -197,3 +199,19 @@ exports.generate = function (record) {
 
 	return stringifySequences(record.gameTrees);
 };
+
+if (isNode) {
+	module.exports.parse = parse;
+	module.exports.generate = generate;
+} else if (isAngular) {
+	angular.module("smartGame", [])
+	.factory("SGF", function() {
+		return {
+			parse: parse,
+			generate: generate,
+		};
+	});
+}
+
+})(typeof module !== 'undefined' && module.exports,
+  typeof angular !== 'undefined');
